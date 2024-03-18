@@ -3,11 +3,23 @@ import 'package:flutter_svg/svg.dart';
 import 'package:taskbatchfive/presentation/screen/authscreen/signup_screen.dart';
 import 'package:taskbatchfive/presentation/widgets/backgroundwidget.dart';
 
+import '../../../data/Newtwork_services/network_caller.dart';
+import '../../../data/Newtwork_services/response_object.dart';
 import '../../utils/assets_path.dart';
+import '../../utils/urls.dart';
+import '../bottomNavbar.dart';
 
-class SignScreen extends StatelessWidget {
+class SignScreen extends StatefulWidget {
   const SignScreen({super.key});
 
+  @override
+  State<SignScreen> createState() => _SignScreenState();
+}
+
+class _SignScreenState extends State<SignScreen> {
+
+  final TextEditingController emailcon=TextEditingController();
+  final TextEditingController passcon=TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,6 +41,7 @@ class SignScreen extends StatelessWidget {
                   height: 10,
                 ),
                 TextFormField(
+                  controller: emailcon,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(helperText: 'Email'),
                 ),
@@ -36,6 +49,7 @@ class SignScreen extends StatelessWidget {
                   height: 10,
                 ),
                 TextFormField(
+                  controller: passcon,
                   obscureText: true,
                   decoration: InputDecoration(helperText: 'password'),
                 ),
@@ -45,7 +59,29 @@ class SignScreen extends StatelessWidget {
                 SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          Map<String,dynamic>params={
+                            "email":emailcon.text.toString(),
+                            "password":passcon.text.toString(),
+
+                          };
+                          final ResponseObject response= await NetworkCaller.postRequest(Urls.regestion, params);
+                          if(response.issuccess){
+                            if(mounted){
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Login Success")));
+                            }
+
+
+                          }else{
+                            if(mounted){
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response.errorMessage??"Login fail")));
+                            }
+
+
+                          }
+
+                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>BottomNavbar()), (route) => false);
+                        },
                         child: Icon(Icons.arrow_circle_right_sharp))),
                 SizedBox(
                   height: 25,

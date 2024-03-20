@@ -40,9 +40,9 @@ class NetworkCaller {
       log(response.statusCode.toString());
       log(response.body.toString());
       if (response.statusCode == 200) {
-        final decodeResponse = jsonDecode(response.body);
+        final endecodeResponse = jsonEncode(response.body);
         return ResponseObject(
-            statuscode: 200, responseBODY: decodeResponse, issuccess: true);
+            statuscode: 200, responseBODY: endecodeResponse, issuccess: true);
       } else if(response.statusCode==401) {
         return ResponseObject(
           errorMessage: "email/password wrong try again",

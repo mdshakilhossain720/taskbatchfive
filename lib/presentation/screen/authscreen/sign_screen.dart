@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:taskbatchfive/data/login_response.dart';
+import 'package:taskbatchfive/presentation/controller/auth_controller.dart';
 import 'package:taskbatchfive/presentation/screen/authscreen/signup_screen.dart';
 import 'package:taskbatchfive/presentation/widgets/backgroundwidget.dart';
 
@@ -17,9 +19,9 @@ class SignScreen extends StatefulWidget {
 }
 
 class _SignScreenState extends State<SignScreen> {
+  final TextEditingController emailcon = TextEditingController();
+  final TextEditingController passcon = TextEditingController();
 
-  final TextEditingController emailcon=TextEditingController();
-  final TextEditingController passcon=TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,27 +62,40 @@ class _SignScreenState extends State<SignScreen> {
                     width: double.infinity,
                     child: ElevatedButton(
                         onPressed: () async {
-                          Map<String,dynamic>params={
-                            "email":emailcon.text.toString(),
-                            "password":passcon.text.toString(),
-
+                          Map<String, dynamic> params = {
+                            "email": emailcon.text.toString(),
+                            "password": passcon.text.toString(),
                           };
-                          final ResponseObject response= await NetworkCaller.postRequest(Urls.regestion, params);
-                          if(response.issuccess){
-                            if(mounted){
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Login Success")));
+                          final ResponseObject response =
+                              await NetworkCaller.postRequest(
+                                  Urls.regestion, params);
+                          if (response.issuccess) {
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("Login Success")));
                             }
+                            LoginResponse loginresponse =
+                                LoginResponse.fromJson(response.responseBODY);
 
+                            await AuthController.saveData(loginresponse.data!);
+                            await AuthController.savetoken(
+                                loginresponse.token!);
 
-                          }else{
-                            if(mounted){
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response.errorMessage??"Login fail")));
+                            if (mounted) {
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => BottomNavbar()),
+                                  (route) => false);
                             }
-
-
+                          } else {
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(response.errorMessage ??
+                                          "Login fail")));
+                            }
                           }
-
-                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>BottomNavbar()), (route) => false);
                         },
                         child: Icon(Icons.arrow_circle_right_sharp))),
                 SizedBox(
@@ -112,8 +127,10 @@ class _SignScreenState extends State<SignScreen> {
                           ),
                         ),
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>SignUpScreen()));
-
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SignUpScreen()));
                         },
                         child: Text("SignUp")),
                   ],

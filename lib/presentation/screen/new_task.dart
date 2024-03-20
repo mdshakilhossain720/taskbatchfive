@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:taskbatchfive/presentation/controller/auth_controller.dart';
+import 'package:taskbatchfive/presentation/screen/authscreen/sign_screen.dart';
 
 import 'package:taskbatchfive/presentation/widgets/backgroundwidget.dart';
 
@@ -32,7 +34,11 @@ class NewTaskScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              IconButton(onPressed: () {}, icon: Icon(Icons.logout)),
+              IconButton(onPressed: () {
+                AuthController.cleardata();
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>SignScreen()));
+
+              }, icon: Icon(Icons.logout)),
             ],
           ),
         ),
